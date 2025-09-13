@@ -9,7 +9,7 @@ interface WorkoutPlanProps {
 
 const WorkoutPlan: React.FC<WorkoutPlanProps> = ({ plan }) => {
   const [activeDay, setActiveDay] = useState(plan.weeklySchedule[0]?.day || '');
-  const today = new Date().toLocaleString('en-us', { weekday: 'long' });
+  const today = new Date().toLocaleString('th-TH', { weekday: 'long' });
 
   React.useEffect(() => {
      const todaySchedule = plan.weeklySchedule.find(d => d.day === today);

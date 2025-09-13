@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { auth } from '../firebase';
-// Fix: Import firebase to get access to the User type for the v8 SDK.
-import firebase from 'firebase/app';
-import 'firebase/auth';
+// Fix: Corrected firebase import to get User type and be consistent with other components.
+// This resolves the error where firebase.User was not found.
+import firebase, { auth } from '../firebase';
 // Fix: Module '"firebase/auth"' has no exported member 'onAuthStateChanged' or 'User'.
 // import { onAuthStateChanged, User } from 'firebase/auth';
 

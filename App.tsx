@@ -28,7 +28,7 @@ const App: React.FC = () => {
           setUserData(data);
         } catch (e) {
           console.error("Failed to load data from Firestore", e);
-          setError("Failed to load your profile.");
+          setError(t.failedToLoadProfile);
         }
       } else {
         setUserData(null);
@@ -44,7 +44,7 @@ const App: React.FC = () => {
 
   const handleCreatePlan = useCallback(async (newProfile: UserProfile) => {
     if (!user) {
-        setError("You must be logged in to create a plan.");
+        setError(t.loginRequired);
         return;
     }
     setIsGenerating(true);
@@ -57,7 +57,7 @@ const App: React.FC = () => {
       
       setUserData(newUserData);
     } catch (err: any) {
-      setError(err.message || 'An unknown error occurred.');
+      setError(err.message || t.unknownError);
     } finally {
       setIsGenerating(false);
     }

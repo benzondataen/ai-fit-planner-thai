@@ -1,6 +1,6 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { UserProfile, FitnessPlan } from '../types';
+import { t } from '../translations';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
@@ -64,25 +64,28 @@ const planSchema = {
 
 const generatePrompt = (profile: UserProfile): string => {
   return `
-    You are a world-class fitness and nutrition expert AI. Your task is to create a personalized weekly workout and nutrition plan for a user based on their profile.
+    คุณคือ AI ผู้เชี่ยวชาญด้านฟิตเนสและโภชนาการระดับโลก งานของคุณคือการสร้างแผนการออกกำลังกายและโภชนาการรายสัปดาห์ส่วนบุคคลสำหรับผู้ใช้ตามโปรไฟล์ของพวกเขา
 
-    User Profile:
-    - Age: ${profile.age}
-    - Gender: ${profile.gender}
-    - Weight: ${profile.weight} kg
-    - Height: ${profile.height} cm
-    - Activity Level: "${profile.activityLevel}"
-    - Main Goal: ${profile.goal.type}
-    - Specific Goal Details: "${profile.goal.details}"
-    - Available Equipment: "${profile.goal.equipment}"
+    โปรไฟล์ผู้ใช้:
+    - อายุ: ${profile.age} ปี
+    - เพศ: ${profile.gender}
+    - น้ำหนัก: ${profile.weight} กก.
+    - ส่วนสูง: ${profile.height} ซม.
+    - ระดับกิจกรรม: "${profile.activityLevel}"
+    - เป้าหมายหลัก: ${profile.goal.type}
+    - รายละเอียดเป้าหมายเฉพาะ: "${profile.goal.details}"
+    - อุปกรณ์ที่มี: "${profile.goal.equipment}"
 
-    Based on this profile, generate a comprehensive plan in JSON format. The JSON must adhere to the provided schema.
+    จากโปรไฟล์นี้ โปรดสร้างแผนที่ครอบคลุมในรูปแบบ JSON โดย JSON ต้องเป็นไปตามสคีมาที่ให้ไว้
 
-    The workout plan should be a 7-day schedule. If a day is a rest day, the 'focus' should be 'Rest Day' and the 'exercises' array should be empty. For workout days, provide 4-6 exercises targeting different muscle groups according to a logical split (e.g., Push/Pull/Legs, Upper/Lower, Full Body).
+    ข้อกำหนดเพิ่มเติม:
+    - ภาษา: เนื้อหาทั้งหมดในแผน, รวมถึงชื่อท่าออกกำลังกาย, กลุ่มกล้ามเนื้อที่โฟกัส (focus), ตัวอย่างเมนูอาหาร และ **ชื่อวัตถุดิบทั้งหมดในเมนูอาหาร** ต้องเป็นภาษาไทยทั้งหมด
 
-    The nutrition plan should provide a daily calorie target and macro breakdown (protein, carbs, fat in grams) appropriate for the user's goal. Also, provide example meals for breakfast, lunch, dinner, and one snack for a single representative day. The meal examples should be healthy, balanced, and align with the user's goals.
+    แผนการออกกำลังกายควรเป็นตาราง 7 วัน หากวันใดเป็นวันพัก 'focus' ควรเป็น 'วันพัก' และอาร์เรย์ 'exercises' ควรว่างเปล่า สำหรับวันออกกำลังกาย ให้จัดหาท่าออกกำลังกาย 4-6 ท่าที่เน้นกลุ่มกล้ามเนื้อต่างๆ ตามการแบ่งที่สมเหตุสมผล (เช่น Push/Pull/Legs, Upper/Lower, Full Body)
 
-    Important: Do not include any introductory text, closing remarks, or any content outside of the single, valid JSON object that matches the schema.
+    แผนโภชนาการควรระบุเป้าหมายแคลอรี่รายวันและการแบ่งสารอาหารหลัก (โปรตีน, คาร์โบไฮเดรต, ไขมัน เป็นกรัม) ที่เหมาะสมกับเป้าหมายของผู้ใช้ นอกจากนี้ ให้ยกตัวอย่างอาหารสำหรับอาหารเช้า กลางวัน เย็น และของว่างหนึ่งมื้อสำหรับหนึ่งวัน ตัวอย่างอาหารควรดีต่อสุขภาพ สมดุล และสอดคล้องกับเป้าหมายของผู้ใช้
+
+    สำคัญ: ห้ามใส่ข้อความเกริ่นนำ ข้อความปิดท้าย หรือเนื้อหาใดๆ นอกเหนือจากอ็อบเจกต์ JSON ที่ถูกต้องและตรงกับสคีมาเพียงอ็อบเจกต์เดียว
   `;
 };
 
@@ -103,6 +106,6 @@ export const generateFitnessPlan = async (profile: UserProfile): Promise<Fitness
     return plan as FitnessPlan;
   } catch (error) {
     console.error("Error generating fitness plan:", error);
-    throw new Error("Failed to generate a fitness plan from the AI. Please try again.");
+    throw new Error(t.generatePlanError);
   }
 };

@@ -15,7 +15,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
     goal: {
       type: GoalType.LOSE_WEIGHT,
       details: '',
-      equipment: 'Full gym access'
+      equipment: 'เข้ายิมได้เต็มที่'
     }
   });
 
@@ -38,7 +38,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.weight || !formData.height || !formData.age || !formData.goal?.details) {
-        alert("Please fill out all fields.");
+        alert(t.fillAllFields);
         return;
     }
     onSave(formData as UserProfile);

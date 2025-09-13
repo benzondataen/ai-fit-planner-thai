@@ -1,20 +1,20 @@
 export enum Gender {
-  MALE = 'Male',
-  FEMALE = 'Female',
+  MALE = 'ชาย',
+  FEMALE = 'หญิง',
 }
 
 export enum ActivityLevel {
-  SEDENTARY = 'Sedentary (little or no exercise)',
-  LIGHTLY_ACTIVE = 'Lightly active (light exercise/sports 1-3 days/week)',
-  MODERATELY_ACTIVE = 'Moderately active (moderate exercise/sports 3-5 days/week)',
-  VERY_ACTIVE = 'Very active (hard exercise/sports 6-7 days a week)',
-  EXTRA_ACTIVE = 'Extra active (very hard exercise/sports & physical job)',
+  SEDENTARY = 'นั่งทำงานเป็นส่วนใหญ่ (ไม่ออกกำลังกายเลย)',
+  LIGHTLY_ACTIVE = 'ออกกำลังกายเบาๆ (1-3 วัน/สัปดาห์)',
+  MODERATELY_ACTIVE = 'ออกกำลังกายปานกลาง (3-5 วัน/สัปดาห์)',
+  VERY_ACTIVE = 'ออกกำลังกายหนัก (6-7 วัน/สัปดาห์)',
+  EXTRA_ACTIVE = 'ออกกำลังกายหนักมาก (ทุกวัน และทำงานที่ใช้แรงเยอะ)',
 }
 
 export enum GoalType {
-  LOSE_WEIGHT = 'Lose Weight',
-  GAIN_MUSCLE = 'Gain Muscle',
-  MAINTAIN_HEALTH = 'Maintain Health',
+  LOSE_WEIGHT = 'ลดน้ำหนัก',
+  GAIN_MUSCLE = 'สร้างกล้ามเนื้อ',
+  MAINTAIN_HEALTH = 'รักษาสุขภาพ',
 }
 
 export interface UserProfile {

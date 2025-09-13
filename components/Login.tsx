@@ -13,7 +13,7 @@ const Login: React.FC = () => {
             await auth.signInWithPopup(provider);
         } catch (error) {
             console.error("Authentication error:", error);
-            alert("Failed to sign in with Google. Please try again.");
+            alert(t.loginFailed);
         }
     };
 
