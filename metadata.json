@@ -1,0 +1,5 @@
+{
+  "name": "FitAI Planner",
+  "description": "An AI-powered web application that generates personalized workout and nutrition plans based on user profiles and goals. It helps users track their fitness journey with features like TDEE calculation and progress visualization.",
+  "requestFramePermissions": []
+}
