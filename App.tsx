@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import LoadingSpinner from './components/LoadingSpinner';
 import Header from './components/Header';
 import Login from './components/Login';
+import Feedback from './components/Feedback';
 import { generateFitnessPlan } from './services/geminiService';
 import { getUserData, saveUserData } from './services/firestoreService';
 import { useAuth } from './hooks/useAuth';
@@ -68,6 +69,10 @@ const App: React.FC = () => {
     auth.signOut();
   };
   
+  const handleResetPlan = () => {
+    setUserData(null);
+  };
+
   const resetError = () => {
       setError(null);
       // We don't need to call handleReset equivalent because logging out and in will refetch data
@@ -114,7 +119,7 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-slate-50 text-slate-800">
       {userData?.profile && userData?.plan ? (
         <>
-          <Header onLogout={handleLogout} />
+          <Header onLogout={handleLogout} onResetPlan={handleResetPlan} />
           <main>
             <Dashboard profile={userData.profile} plan={userData.plan} />
           </main>
@@ -122,6 +127,7 @@ const App: React.FC = () => {
       ) : (
         <ProfileForm onSave={handleCreatePlan} />
       )}
+      <Feedback user={user} />
     </div>
   );
 };

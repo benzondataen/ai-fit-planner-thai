@@ -8,10 +8,13 @@ interface ProfileFormProps {
   onSave: (profile: UserProfile) => void;
 }
 
+const WEEK_DAYS = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
+
 const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
   const [formData, setFormData] = useState<Partial<UserProfile>>({
     gender: Gender.MALE,
     activityLevel: ActivityLevel.MODERATELY_ACTIVE,
+    workoutDays: ['จันทร์', 'พุธ', 'ศุกร์'], // Default workout days
     goal: {
       type: GoalType.LOSE_WEIGHT,
       details: '',
@@ -35,9 +38,19 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
     }
   };
 
+  const handleDayChange = (day: string) => {
+    setFormData(prev => {
+        const currentDays = prev.workoutDays || [];
+        const newDays = currentDays.includes(day)
+            ? currentDays.filter(d => d !== day)
+            : [...currentDays, day];
+        return { ...prev, workoutDays: newDays };
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.weight || !formData.height || !formData.age || !formData.goal?.details) {
+    if (!formData.weight || !formData.height || !formData.age || !formData.goal?.details || !formData.workoutDays || formData.workoutDays.length === 0) {
         alert(t.fillAllFields);
         return;
     }
@@ -100,6 +113,22 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
                 <div className="mt-4">
                     <label htmlFor="goal.equipment" className={labelClass}>{t.equipment}</label>
                     <input type="text" name="goal.equipment" id="goal.equipment" placeholder={t.equipmentPlaceholder} required className={inputClass} onChange={handleChange} value={formData.goal?.equipment} />
+                </div>
+                 <div className="mt-4">
+                    <label className={labelClass}>วันที่ต้องการออกกำลังกาย (เลือกอย่างน้อย 1 วัน)</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        {WEEK_DAYS.map(day => (
+                            <label key={day} className={`flex items-center space-x-2 p-3 rounded-lg cursor-pointer transition ${formData.workoutDays?.includes(day) ? 'bg-teal-100 border-teal-500 text-teal-800' : 'bg-slate-100 border-slate-300'}`}>
+                                <input
+                                    type="checkbox"
+                                    checked={formData.workoutDays?.includes(day)}
+                                    onChange={() => handleDayChange(day)}
+                                    className="form-checkbox h-5 w-5 text-teal-600 rounded focus:ring-teal-500"
+                                />
+                                <span>{day}</span>
+                            </label>
+                        ))}
+                    </div>
                 </div>
             </div>
 

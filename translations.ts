@@ -54,5 +54,13 @@ export const t = {
     "breakfast": "อาหารเช้า",
     "lunch": "อาหารกลางวัน",
     "dinner": "อาหารเย็น",
-    "snack": "ของว่าง"
+    "snack": "ของว่าง",
+    "sendFeedback": "ส่งข้อเสนอแนะ",
+    "feedbackModalTitle": "แบ่งปันความคิดเห็นของคุณ",
+    "feedbackPlaceholder": "บอกเราว่าคุณคิดอย่างไรเกี่ยวกับแอปพลิเคชันนี้...",
+    "submitFeedback": "ส่งความคิดเห็น",
+    "cancel": "ยกเลิก",
+    "feedbackSuccess": "ขอบคุณสำหรับข้อเสนอแนะ!",
+    "feedbackError": "ไม่สามารถส่งข้อเสนอแนะได้ กรุณาลองอีกครั้ง",
+    "submitting": "กำลังส่ง..."
 };

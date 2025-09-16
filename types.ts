@@ -23,6 +23,7 @@ export interface UserProfile {
   age: number;
   gender: Gender;
   activityLevel: ActivityLevel;
+  workoutDays: string[]; // e.g., ['จันทร์', 'พุธ', 'ศุกร์']
   goal: {
     type: GoalType;
     details: string; // e.g., "Lose 5kg in 2 months"

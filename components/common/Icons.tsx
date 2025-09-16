@@ -34,9 +34,27 @@ export const LogoutIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
+export const PlusIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+    </svg>
+);
+
 export const GoogleIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg className={className} role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <title>Google</title>
         <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.02 1.02-2.62 2.04-4.82 2.04-5.82 0-9.6-4.82-9.6-10.6s3.78-10.6 9.6-10.6c3.33 0 5.34 1.4 6.6 2.6l2.33-2.33C19.2.65 16.33 0 12.48 0 5.82 0 .5 5.33.5 12s5.32 12 11.98 12c3.25 0 5.76-1.08 7.84-3.12 2.1-2.08 2.83-5.22 2.83-7.62-.02-.65-.08-1.28-.18-1.88H12.48z" fill="currentColor"/>
+    </svg>
+);
+
+export const FeedbackIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+  </svg>
+);
+
+export const CloseIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
     </svg>
 );
