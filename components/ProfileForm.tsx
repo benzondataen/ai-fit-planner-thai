@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { UserProfile, Gender, ActivityLevel, GoalType } from '../types';
 import { GENDER_OPTIONS, ACTIVITY_LEVEL_OPTIONS, GOAL_TYPE_OPTIONS } from '../constants';
 import { DumbbellIcon } from './common/Icons';
-import { t } from '../translations';
+import { useTranslation } from '../translations';
 
 interface ProfileFormProps {
   onSave: (profile: UserProfile) => void;
@@ -11,6 +11,8 @@ interface ProfileFormProps {
 const WEEK_DAYS = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
 
 const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState<Partial<UserProfile>>({
     gender: Gender.MALE,
     activityLevel: ActivityLevel.MODERATELY_ACTIVE,
@@ -18,7 +20,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
     goal: {
       type: GoalType.LOSE_WEIGHT,
       details: '',
-      equipment: 'เข้ายิมได้เต็มที่'
+      // FIX: Correctly call the translation function `t` with a key.
+      equipment: t('defaultEquipment'),
     }
   });
 
@@ -51,7 +54,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.weight || !formData.height || !formData.age || !formData.goal?.details || !formData.workoutDays || formData.workoutDays.length === 0) {
-        alert(t.fillAllFields);
+        // FIX: Correctly call the translation function `t` with a key.
+        alert(t('fillAllFields'));
         return;
     }
     onSave(formData as UserProfile);
@@ -65,57 +69,71 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
       <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
         <div className="text-center mb-8">
             <DumbbellIcon className="w-16 h-16 text-teal-500 mx-auto mb-4" />
-            <h1 className="text-4xl font-bold text-slate-800">{t.welcomeMessage}</h1>
-            <p className="text-slate-500 mt-2">{t.profileFormTitle}</p>
+            {/* FIX: Correctly call the translation function `t` with a key. */}
+            <h1 className="text-4xl font-bold text-slate-800">{t('welcomeMessage')}</h1>
+            {/* FIX: Correctly call the translation function `t` with a key. */}
+            <p className="text-slate-500 mt-2">{t('profileFormTitle')}</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                    <label htmlFor="weight" className={labelClass}>{t.weight}</label>
+                    {/* FIX: Correctly call the translation function `t` with a key. */}
+                    <label htmlFor="weight" className={labelClass}>{t('weight')}</label>
                     <input type="number" name="weight" id="weight" required className={inputClass} onChange={handleChange} />
                 </div>
                 <div>
-                    <label htmlFor="height" className={labelClass}>{t.height}</label>
+                    {/* FIX: Correctly call the translation function `t` with a key. */}
+                    <label htmlFor="height" className={labelClass}>{t('height')}</label>
                     <input type="number" name="height" id="height" required className={inputClass} onChange={handleChange} />
                 </div>
                 <div>
-                    <label htmlFor="age" className={labelClass}>{t.age}</label>
+                    {/* FIX: Correctly call the translation function `t` with a key. */}
+                    <label htmlFor="age" className={labelClass}>{t('age')}</label>
                     <input type="number" name="age" id="age" required className={inputClass} onChange={handleChange} />
                 </div>
             </div>
             
             <div>
-                <label htmlFor="gender" className={labelClass}>{t.gender}</label>
+                {/* FIX: Correctly call the translation function `t` with a key. */}
+                <label htmlFor="gender" className={labelClass}>{t('gender')}</label>
                 <select name="gender" id="gender" className={inputClass} onChange={handleChange} value={formData.gender}>
-                    {GENDER_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                    {GENDER_OPTIONS.map(opt => <option key={opt} value={opt}>{t(`gender_${opt.toLowerCase()}` as any)}</option>)}
                 </select>
             </div>
 
             <div>
-                <label htmlFor="activityLevel" className={labelClass}>{t.activityLevel}</label>
+                {/* FIX: Correctly call the translation function `t` with a key. */}
+                <label htmlFor="activityLevel" className={labelClass}>{t('activityLevel')}</label>
                 <select name="activityLevel" id="activityLevel" className={inputClass} onChange={handleChange} value={formData.activityLevel}>
-                    {ACTIVITY_LEVEL_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                    {ACTIVITY_LEVEL_OPTIONS.map(opt => <option key={opt} value={opt}>{t(`activity_${opt.toLowerCase()}` as any)}</option>)}
                 </select>
             </div>
             
             <div className="border-t border-slate-200 pt-6">
-                <h2 className="text-2xl font-semibold mb-4 text-center text-slate-700">{t.fitnessGoalTitle}</h2>
+                {/* FIX: Correctly call the translation function `t` with a key. */}
+                <h2 className="text-2xl font-semibold mb-4 text-center text-slate-700">{t('fitnessGoalTitle')}</h2>
                  <div>
-                    <label htmlFor="goal.type" className={labelClass}>{t.primaryGoal}</label>
+                    {/* FIX: Correctly call the translation function `t` with a key. */}
+                    <label htmlFor="goal.type" className={labelClass}>{t('primaryGoal')}</label>
                     <select name="goal.type" id="goal.type" className={inputClass} onChange={handleChange} value={formData.goal?.type}>
-                        {GOAL_TYPE_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        {GOAL_TYPE_OPTIONS.map(opt => <option key={opt} value={opt}>{t(`goal_${opt.toLowerCase()}` as any)}</option>)}
                     </select>
                 </div>
                  <div className="mt-4">
-                    <label htmlFor="goal.details" className={labelClass}>{t.goalDetails}</label>
-                    <input type="text" name="goal.details" id="goal.details" placeholder={t.goalDetailsPlaceholder} required className={inputClass} onChange={handleChange} />
+                    {/* FIX: Correctly call the translation function `t` with a key. */}
+                    <label htmlFor="goal.details" className={labelClass}>{t('goalDetails')}</label>
+                    {/* FIX: Correctly call the translation function `t` with a key. */}
+                    <input type="text" name="goal.details" id="goal.details" placeholder={t('goalDetailsPlaceholder')} required className={inputClass} onChange={handleChange} />
                 </div>
                 <div className="mt-4">
-                    <label htmlFor="goal.equipment" className={labelClass}>{t.equipment}</label>
-                    <input type="text" name="goal.equipment" id="goal.equipment" placeholder={t.equipmentPlaceholder} required className={inputClass} onChange={handleChange} value={formData.goal?.equipment} />
+                    {/* FIX: Correctly call the translation function `t` with a key. */}
+                    <label htmlFor="goal.equipment" className={labelClass}>{t('equipment')}</label>
+                    {/* FIX: Correctly call the translation function `t` with a key. */}
+                    <input type="text" name="goal.equipment" id="goal.equipment" placeholder={t('equipmentPlaceholder')} required className={inputClass} onChange={handleChange} value={formData.goal?.equipment} />
                 </div>
                  <div className="mt-4">
-                    <label className={labelClass}>วันที่ต้องการออกกำลังกาย (เลือกอย่างน้อย 1 วัน)</label>
+                    {/* FIX: Correctly call the translation function `t` with a key. */}
+                    <label className={labelClass}>{t('workoutDays')}</label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         {WEEK_DAYS.map(day => (
                             <label key={day} className={`flex items-center space-x-2 p-3 rounded-lg cursor-pointer transition ${formData.workoutDays?.includes(day) ? 'bg-teal-100 border-teal-500 text-teal-800' : 'bg-slate-100 border-slate-300'}`}>
@@ -133,7 +151,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
             </div>
 
             <button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 text-lg">
-                {t.createPlan}
+                {/* FIX: Correctly call the translation function `t` with a key. */}
+                {t('createPlan')}
             </button>
         </form>
       </div>

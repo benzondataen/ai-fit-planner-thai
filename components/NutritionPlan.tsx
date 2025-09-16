@@ -1,7 +1,7 @@
 import React from 'react';
 import { NutritionPlan as NutritionPlanType } from '../types';
 import { PlateIcon, FireIcon } from './common/Icons';
-import { t } from '../translations';
+import { useTranslation } from '../translations';
 
 interface NutritionPlanProps {
   plan: NutritionPlanType;
@@ -17,38 +17,51 @@ const MacroCard: React.FC<{ label: string; value: number; unit: string; color: s
     </div>
 );
 
-const mealTypeTranslations: { [key: string]: string } = {
-    breakfast: t.breakfast,
-    lunch: t.lunch,
-    dinner: t.dinner,
-    snack: t.snack,
-};
 
 const NutritionPlan: React.FC<NutritionPlanProps> = ({ plan }) => {
+  const { t } = useTranslation();
+
+  const mealTypeTranslations: { [key: string]: string } = {
+      // FIX: Correctly call the translation function `t` with keys.
+      breakfast: t('breakfast'),
+      lunch: t('lunch'),
+      dinner: t('dinner'),
+      snack: t('snack'),
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 border border-slate-200">
       <div className="flex items-center mb-6">
         <PlateIcon className="w-8 h-8 text-emerald-500 mr-4" />
-        <h2 className="text-3xl font-bold text-slate-800">{t.nutritionGuideTitle}</h2>
+        {/* FIX: Correctly call the translation function `t` with a key. */}
+        <h2 className="text-3xl font-bold text-slate-800">{t('nutritionGuideTitle')}</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <MacroCard label={t.calories} value={plan.dailyCalories} unit="kcal" color="border-yellow-400">
+        {/* FIX: Correctly call the translation function `t` with keys. */}
+        <MacroCard label={t('calories')} value={plan.dailyCalories} unit={t('kcal')} color="border-yellow-400">
             <FireIcon className="w-8 h-8 text-yellow-400" />
         </MacroCard>
-        <MacroCard label={t.protein} value={plan.proteinGrams} unit="g" color="border-red-400">
-            <div className="w-8 h-8 text-red-400 font-bold text-2xl flex items-center justify-center">ป</div>
+        {/* FIX: Correctly call the translation function `t` with a key. */}
+        <MacroCard label={t('protein')} value={plan.proteinGrams} unit="g" color="border-red-400">
+            {/* FIX: Correctly call the translation function `t` with a key. */}
+            <div className="w-8 h-8 text-red-400 font-bold text-2xl flex items-center justify-center">{t('protein_short')}</div>
         </MacroCard>
-        <MacroCard label={t.carbs} value={plan.carbsGrams} unit="g" color="border-blue-400">
-            <div className="w-8 h-8 text-blue-400 font-bold text-2xl flex items-center justify-center">ค</div>
+        {/* FIX: Correctly call the translation function `t` with a key. */}
+        <MacroCard label={t('carbs')} value={plan.carbsGrams} unit="g" color="border-blue-400">
+            {/* FIX: Correctly call the translation function `t` with a key. */}
+            <div className="w-8 h-8 text-blue-400 font-bold text-2xl flex items-center justify-center">{t('carbs_short')}</div>
         </MacroCard>
-        <MacroCard label={t.fat} value={plan.fatGrams} unit="g" color="border-purple-400">
-             <div className="w-8 h-8 text-purple-400 font-bold text-2xl flex items-center justify-center">ข</div>
+        {/* FIX: Correctly call the translation function `t` with a key. */}
+        <MacroCard label={t('fat')} value={plan.fatGrams} unit="g" color="border-purple-400">
+             {/* FIX: Correctly call the translation function `t` with a key. */}
+             <div className="w-8 h-8 text-purple-400 font-bold text-2xl flex items-center justify-center">{t('fat_short')}</div>
         </MacroCard>
       </div>
       
       <div>
-        <h3 className="text-2xl font-semibold mb-4 text-emerald-600">{t.sampleMeals}</h3>
+        {/* FIX: Correctly call the translation function `t` with a key. */}
+        <h3 className="text-2xl font-semibold mb-4 text-emerald-600">{t('sampleMeals')}</h3>
         <div className="space-y-4">
             {Object.entries(plan.sampleMeals).map(([mealType, description]) => (
                 <div key={mealType} className="bg-slate-100 p-4 rounded-lg">

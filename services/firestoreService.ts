@@ -12,7 +12,7 @@ export const saveUserData = async (uid: string, data: UserData): Promise<void> =
         await userDocRef.set(data);
     } catch (error) {
         console.error("Error saving user data to Firestore: ", error);
-        throw new Error(t.saveError);
+        throw new Error(t('saveError'));
     }
 };
 
@@ -28,7 +28,7 @@ export const getUserData = async (uid: string): Promise<UserData | null> => {
         }
     } catch (error) {
         console.error("Error fetching user data from Firestore: ", error);
-        throw new Error(t.fetchError);
+        throw new Error(t('fetchError'));
     }
 };
 
@@ -42,6 +42,6 @@ export const saveFeedback = async (uid: string, email: string, feedback: string)
         });
     } catch (error) {
         console.error("Error saving feedback to Firestore: ", error);
-        throw new Error(t.feedbackError);
+        throw new Error(t('feedbackError'));
     }
 };

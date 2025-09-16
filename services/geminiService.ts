@@ -1,6 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { UserProfile, FitnessPlan } from '../types';
-import { t } from '../translations';
+import { t, getLanguage } from '../translations';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
@@ -63,30 +63,28 @@ const planSchema = {
 
 
 const generatePrompt = (profile: UserProfile): string => {
-  return `
-    คุณคือ AI ผู้เชี่ยวชาญด้านฟิตเนสและโภชนาการระดับโลก งานของคุณคือการสร้างแผนการออกกำลังกายและโภชนาการรายสัปดาห์ส่วนบุคคลสำหรับผู้ใช้ตามโปรไฟล์ของพวกเขา
-
-    โปรไฟล์ผู้ใช้:
-    - อายุ: ${profile.age} ปี
-    - เพศ: ${profile.gender}
-    - น้ำหนัก: ${profile.weight} กก.
-    - ส่วนสูง: ${profile.height} ซม.
-    - ระดับกิจกรรม: "${profile.activityLevel}"
-    - วันที่ต้องการออกกำลังกาย: ${profile.workoutDays.join(', ')}
-    - เป้าหมายหลัก: ${profile.goal.type}
-    - รายละเอียดเป้าหมายเฉพาะ: "${profile.goal.details}"
-    - อุปกรณ์ที่มี: "${profile.goal.equipment}"
-
-    จากโปรไฟล์นี้ โปรดสร้างแผนที่ครอบคลุมในรูปแบบ JSON โดย JSON ต้องเป็นไปตามสคีมาที่ให้ไว้
-
-    ข้อกำหนดเพิ่มเติม:
-    - ภาษา: เนื้อหาทั้งหมดในแผน, รวมถึงชื่อท่าออกกำลังกาย, กลุ่มกล้ามเนื้อที่โฟกัส (focus), ตัวอย่างเมนูอาหาร และ **ชื่อวัตถุดิบทั้งหมดในเมนูอาหาร** ต้องเป็นภาษาไทยทั้งหมด
-    - แผนการออกกำลังกาย: ต้องเป็นตาราง 7 วัน โปรดจัดตารางการออกกำลังกายเฉพาะในวันที่ผู้ใช้เลือกเท่านั้น (${profile.workoutDays.join(', ')}). วันอื่นๆ ทั้งหมดในสัปดาห์จะต้องเป็น 'วันพัก' และมีอาร์เรย์ 'exercises' ที่ว่างเปล่า สำหรับวันออกกำลังกาย ให้จัดหาท่าออกกำลังกาย 4-6 ท่าที่เน้นกลุ่มกล้ามเนื้อต่างๆ ตามการแบ่งที่สมเหตุสมผล (เช่น Push/Pull/Legs, Upper/Lower, Full Body)
-
-    แผนโภชนาการควรระบุเป้าหมายแคลอรี่รายวันและการแบ่งสารอาหารหลัก (โปรตีน, คาร์โบไฮเดรต, ไขมัน เป็นกรัม) ที่เหมาะสมกับเป้าหมายของผู้ใช้ นอกจากนี้ ให้ยกตัวอย่างอาหารสำหรับอาหารเช้า กลางวัน เย็น และของว่างหนึ่งมื้อสำหรับหนึ่งวัน ตัวอย่างอาหารควรดีต่อสุขภาพ สมดุล และสอดคล้องกับเป้าหมายของผู้ใช้
-
-    สำคัญ: ห้ามใส่ข้อความเกริ่นนำ ข้อความปิดท้าย หรือเนื้อหาใดๆ นอกเหนือจากอ็อบเจกต์ JSON ที่ถูกต้องและตรงกับสคีมาเพียงอ็อบเจกต์เดียว
-  `;
+  const lang = getLanguage();
+  
+  const languageInstruction = t('gemini_language_instruction');
+  // FIX: Cast dynamic template literal to 'any' to satisfy TypeScript's strict key type for the translation function.
+  const gender = t(`gender_${profile.gender.toLowerCase()}` as any);
+  // FIX: Cast dynamic template literal to 'any' to satisfy TypeScript's strict key type for the translation function.
+  const activityLevel = t(`activity_${profile.activityLevel.toLowerCase()}` as any);
+  // FIX: Cast dynamic template literal to 'any' to satisfy TypeScript's strict key type for the translation function.
+  const goalType = t(`goal_${profile.goal.type.toLowerCase()}` as any);
+  
+  return t('gemini_full_prompt', {
+      age: profile.age,
+      gender: gender,
+      weight: profile.weight,
+      height: profile.height,
+      activityLevel: activityLevel,
+      workoutDays: profile.workoutDays.join(', '),
+      goalType: goalType,
+      goalDetails: profile.goal.details,
+      equipment: profile.goal.equipment,
+      languageInstruction: languageInstruction,
+  });
 };
 
 export const generateFitnessPlan = async (profile: UserProfile): Promise<FitnessPlan> => {
@@ -106,6 +104,6 @@ export const generateFitnessPlan = async (profile: UserProfile): Promise<Fitness
     return plan as FitnessPlan;
   } catch (error) {
     console.error("Error generating fitness plan:", error);
-    throw new Error(t.generatePlanError);
+    throw new Error(t('generatePlanError'));
   }
 };

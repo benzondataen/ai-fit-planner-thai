@@ -10,12 +10,11 @@ import { generateFitnessPlan } from './services/geminiService';
 import { getUserData, saveUserData } from './services/firestoreService';
 import { useAuth } from './hooks/useAuth';
 import { auth } from './firebase';
-// Fix: Module '"firebase/auth"' has no exported member 'signOut'. Switched to v8 syntax.
-// import { signOut } from 'firebase/auth';
-import { t } from './translations';
+import { useTranslation } from './translations';
 
 const App: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
+  const { t } = useTranslation();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -29,7 +28,8 @@ const App: React.FC = () => {
           setUserData(data);
         } catch (e) {
           console.error("Failed to load data from Firestore", e);
-          setError(t.failedToLoadProfile);
+          // FIX: Correctly call the translation function `t` with a key.
+          setError(t('failedToLoadProfile'));
         }
       } else {
         setUserData(null);
@@ -40,12 +40,14 @@ const App: React.FC = () => {
     if (!authLoading) {
         fetchData();
     }
-  }, [user, authLoading]);
+    // FIX: Correctly call the translation function `t` with a key.
+  }, [user, authLoading, t('failedToLoadProfile')]);
 
 
   const handleCreatePlan = useCallback(async (newProfile: UserProfile) => {
     if (!user) {
-        setError(t.loginRequired);
+        // FIX: Correctly call the translation function `t` with a key.
+        setError(t('loginRequired'));
         return;
     }
     setIsGenerating(true);
@@ -58,14 +60,15 @@ const App: React.FC = () => {
       
       setUserData(newUserData);
     } catch (err: any) {
-      setError(err.message || t.unknownError);
+      // FIX: Correctly call the translation function `t` with a key.
+      setError(err.message || t('unknownError'));
     } finally {
       setIsGenerating(false);
     }
-  }, [user]);
+    // FIX: Correctly call the translation function `t` with keys.
+  }, [user, t('loginRequired'), t('unknownError')]);
   
   const handleLogout = () => {
-    // Fix: Use v8 namespaced API for signOut
     auth.signOut();
   };
   
@@ -75,7 +78,6 @@ const App: React.FC = () => {
 
   const resetError = () => {
       setError(null);
-      // We don't need to call handleReset equivalent because logging out and in will refetch data
   }
 
   const effectiveLoading = authLoading || isLoading;
@@ -83,7 +85,8 @@ const App: React.FC = () => {
   if (effectiveLoading) {
     return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50">
-            <LoadingSpinner message={t.loadingProfile}/>
+            {/* FIX: Correctly call the translation function `t` with a key. */}
+            <LoadingSpinner message={t('loadingProfile')}/>
         </div>
     );
   }
@@ -91,7 +94,8 @@ const App: React.FC = () => {
   if (isGenerating) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50">
-            <LoadingSpinner message={t.generatingPlan}/>
+            {/* FIX: Correctly call the translation function `t` with a key. */}
+            <LoadingSpinner message={t('generatingPlan')}/>
         </div>
     );
   }
@@ -99,13 +103,15 @@ const App: React.FC = () => {
   if (error) {
       return (
           <div className="min-h-screen flex flex-col items-center justify-center text-center p-4 bg-slate-50">
-              <h2 className="text-2xl text-red-500 font-bold mb-4">{t.failedToGenerate}</h2>
+              {/* FIX: Correctly call the translation function `t` with a key. */}
+              <h2 className="text-2xl text-red-500 font-bold mb-4">{t('failedToGenerate')}</h2>
               <p className="text-slate-500 mb-6">{error}</p>
               <button
                   onClick={resetError}
                   className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg"
               >
-                  {t.tryAgain}
+                  {/* FIX: Correctly call the translation function `t` with a key. */}
+                  {t('tryAgain')}
               </button>
           </div>
       )
