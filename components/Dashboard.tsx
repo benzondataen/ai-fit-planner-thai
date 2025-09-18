@@ -9,6 +9,8 @@ import { useTranslation } from '../translations';
 interface DashboardProps {
   profile: UserProfile;
   plan: FitnessPlan;
+  onRandomizeMeals: () => void;
+  isRandomizing: boolean;
 }
 
 const StatCard: React.FC<{ title: string; value: string; children: React.ReactNode }> = ({ title, value, children }) => (
@@ -23,7 +25,7 @@ const StatCard: React.FC<{ title: string; value: string; children: React.ReactNo
     </div>
 );
 
-const Dashboard: React.FC<DashboardProps> = ({ profile, plan }) => {
+const Dashboard: React.FC<DashboardProps> = ({ profile, plan, onRandomizeMeals, isRandomizing }) => {
   const { t } = useTranslation();
   const tdee = calculateTDEE(profile);
   const goal = t(`goal_${profile.goal.type.toLowerCase()}` as any);
@@ -44,7 +46,7 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, plan }) => {
         </StatCard>
          {/* FIX: Correctly call the translation function `t` with a key. */}
          <StatCard title={t('height')} value={`${profile.height} cm`}>
-             <svg xmlns="http://www.w.org/2000/svg" className="h-6 w-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
         </StatCard>
         {/* FIX: Correctly call the translation function `t` with a key. */}
         <StatCard title={t('goal')} value={goal}>
@@ -57,7 +59,7 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, plan }) => {
       </div>
       
       <WorkoutPlan plan={plan.workoutPlan} />
-      <NutritionPlan plan={plan.nutritionPlan} />
+      <NutritionPlan plan={plan.nutritionPlan} onRandomizeMeals={onRandomizeMeals} isRandomizing={isRandomizing} />
 
     </div>
   );

@@ -1,10 +1,12 @@
 import React from 'react';
 import { NutritionPlan as NutritionPlanType } from '../types';
-import { PlateIcon, FireIcon } from './common/Icons';
+import { PlateIcon, FireIcon, RefreshIcon } from './common/Icons';
 import { useTranslation } from '../translations';
 
 interface NutritionPlanProps {
   plan: NutritionPlanType;
+  onRandomizeMeals: () => void;
+  isRandomizing: boolean;
 }
 
 const MacroCard: React.FC<{ label: string; value: number; unit: string; color: string; children: React.ReactNode }> = ({ label, value, unit, color, children }) => (
@@ -18,7 +20,7 @@ const MacroCard: React.FC<{ label: string; value: number; unit: string; color: s
 );
 
 
-const NutritionPlan: React.FC<NutritionPlanProps> = ({ plan }) => {
+const NutritionPlan: React.FC<NutritionPlanProps> = ({ plan, onRandomizeMeals, isRandomizing }) => {
   const { t } = useTranslation();
 
   const mealTypeTranslations: { [key: string]: string } = {
@@ -60,8 +62,17 @@ const NutritionPlan: React.FC<NutritionPlanProps> = ({ plan }) => {
       </div>
       
       <div>
-        {/* FIX: Correctly call the translation function `t` with a key. */}
-        <h3 className="text-2xl font-semibold mb-4 text-emerald-600">{t('sampleMeals')}</h3>
+        <div className="flex items-center justify-between mb-4">
+            <h3 className="text-2xl font-semibold text-emerald-600">{t('sampleMeals')}</h3>
+            <button
+                onClick={onRandomizeMeals}
+                disabled={isRandomizing}
+                className="flex items-center space-x-2 px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-opacity-75 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+            >
+                <RefreshIcon className={`w-5 h-5 ${isRandomizing ? 'animate-spin' : ''}`} />
+                <span>{isRandomizing ? t('randomizing') : t('randomizeMeals')}</span>
+            </button>
+        </div>
         <div className="space-y-4">
             {Object.entries(plan.sampleMeals).map(([mealType, description]) => (
                 <div key={mealType} className="bg-slate-100 p-4 rounded-lg">

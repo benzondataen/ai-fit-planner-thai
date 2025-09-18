@@ -48,17 +48,19 @@ export interface WorkoutPlan {
   weeklySchedule: DailyWorkout[];
 }
 
+export interface SampleMeals {
+  breakfast: string;
+  lunch: string;
+  dinner: string;
+  snack: string;
+}
+
 export interface NutritionPlan {
   dailyCalories: number;
   proteinGrams: number;
   carbsGrams: number;
   fatGrams: number;
-  sampleMeals: {
-    breakfast: string;
-    lunch: string;
-    dinner: string;
-    snack: string;
-  };
+  sampleMeals: SampleMeals;
 }
 
 export interface FitnessPlan {

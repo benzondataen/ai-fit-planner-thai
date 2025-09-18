@@ -6,7 +6,7 @@ import LoadingSpinner from './components/LoadingSpinner';
 import Header from './components/Header';
 import Login from './components/Login';
 import Feedback from './components/Feedback';
-import { generateFitnessPlan } from './services/geminiService';
+import { generateFitnessPlan, generateNewSampleMeals } from './services/geminiService';
 import { getUserData, saveUserData } from './services/firestoreService';
 import { useAuth } from './hooks/useAuth';
 import { auth } from './firebase';
@@ -18,6 +18,7 @@ const App: React.FC = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isRandomizingMeals, setIsRandomizingMeals] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,8 +41,7 @@ const App: React.FC = () => {
     if (!authLoading) {
         fetchData();
     }
-    // FIX: Correctly call the translation function `t` with a key.
-  }, [user, authLoading, t('failedToLoadProfile')]);
+  }, [user, authLoading, t]);
 
 
   const handleCreatePlan = useCallback(async (newProfile: UserProfile) => {
@@ -65,9 +65,41 @@ const App: React.FC = () => {
     } finally {
       setIsGenerating(false);
     }
-    // FIX: Correctly call the translation function `t` with keys.
-  }, [user, t('loginRequired'), t('unknownError')]);
+  }, [user, t]);
   
+  const handleRandomizeMeals = useCallback(async () => {
+    if (!user || !userData) {
+      setError(t('loginRequired'));
+      return;
+    }
+    
+    setIsRandomizingMeals(true);
+    setError(null);
+
+    try {
+      const newSampleMeals = await generateNewSampleMeals(userData.profile, userData.plan.nutritionPlan);
+      
+      const newUserData: UserData = {
+        ...userData,
+        plan: {
+          ...userData.plan,
+          nutritionPlan: {
+            ...userData.plan.nutritionPlan,
+            sampleMeals: newSampleMeals,
+          },
+        },
+      };
+
+      await saveUserData(user.uid, newUserData);
+      setUserData(newUserData);
+
+    } catch (err: any) {
+      setError(err.message || t('unknownError'));
+    } finally {
+      setIsRandomizingMeals(false);
+    }
+  }, [user, userData, t]);
+
   const handleLogout = () => {
     auth.signOut();
   };
@@ -127,7 +159,12 @@ const App: React.FC = () => {
         <>
           <Header onLogout={handleLogout} onResetPlan={handleResetPlan} />
           <main>
-            <Dashboard profile={userData.profile} plan={userData.plan} />
+            <Dashboard 
+              profile={userData.profile} 
+              plan={userData.plan} 
+              onRandomizeMeals={handleRandomizeMeals}
+              isRandomizing={isRandomizingMeals}
+            />
           </main>
         </>
       ) : (
