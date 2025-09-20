@@ -9,6 +9,7 @@ const FoodTracker: React.FC = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedCalories, setEditedCalories] = useState<number | null>(null);
     const [editedNutrients, setEditedNutrients] = useState<any | null>(null);
+    const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
     const handleManualInput = () => {
         // Placeholder for manual input logic
@@ -16,6 +17,7 @@ const FoodTracker: React.FC = () => {
         // For now, let's mock an analysis result
         setAnalysisResult({ calories: 500, nutrients: { protein: 20, carbs: 50, fat: 25 } });
         setIsEditing(false);
+        setImagePreviewUrl(null); // Clear image preview if switching to manual input
     };
 
     const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,6 +25,14 @@ const FoodTracker: React.FC = () => {
             const file = event.target.files[0];
             setMealInput(file);
             console.log('Photo uploaded:', file.name);
+
+            // Create a URL for the image preview
+            if (imagePreviewUrl) {
+                URL.revokeObjectURL(imagePreviewUrl); // Clean up previous URL
+            }
+            const newImageUrl = URL.createObjectURL(file);
+            setImagePreviewUrl(newImageUrl);
+
             // For now, let's mock an analysis result
             setAnalysisResult({ calories: 600, nutrients: { protein: 30, carbs: 60, fat: 30 } });
             setIsEditing(false);
@@ -47,6 +57,10 @@ const FoodTracker: React.FC = () => {
         setAnalysisResult(null);
         setEditedCalories(null);
         setEditedNutrients(null);
+        if (imagePreviewUrl) {
+            URL.revokeObjectURL(imagePreviewUrl); // Clean up URL on save
+        }
+        setImagePreviewUrl(null);
     };
 
     return (
@@ -82,6 +96,12 @@ const FoodTracker: React.FC = () => {
 
                 {mealInput && typeof mealInput === 'object' && (
                     <p className="text-sm text-slate-500 mb-4">{t('foodTracker.selectedFile')}: {mealInput.name}</p>
+                )}
+
+                {imagePreviewUrl && (
+                    <div className="mb-4">
+                        <img src={imagePreviewUrl} alt="Meal Preview" className="max-w-full h-auto rounded-lg shadow-md" />
+                    </div>
                 )}
 
                 <button

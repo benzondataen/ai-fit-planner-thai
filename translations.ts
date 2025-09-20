@@ -83,8 +83,23 @@ const th = {
     "goal_gain_muscle": "สร้างกล้ามเนื้อ",
     "goal_maintain_health": "รักษาสุขภาพ",
     "gemini_language_instruction": "เนื้อหาทั้งหมดในแผน, รวมถึงชื่อท่าออกกำลังกาย, กลุ่มกล้ามเนื้อที่โฟกัส (focus), ตัวอย่างเมนูอาหาร และ ชื่อวัตถุดิบทั้งหมดในเมนูอาหาร ต้องเป็นภาษาไทยทั้งหมด",
-    "gemini_full_prompt": "คุณคือ AI ผู้เชี่ยวชาญด้านฟิตเนสและโภชนาการระดับโลก งานของคุณคือการสร้างแผนการออกกำลังกายและโภชนาการรายสัปดาห์ส่วนบุคคลสำหรับผู้ใช้ตามโปรไฟล์ของพวกเขา\n\nโปรไฟล์ผู้ใช้:\n- อายุ: {{age}} ปี\n- เพศ: {{gender}}\n- น้ำหนัก: {{weight}} กก.\n- ส่วนสูง: {{height}} ซม.\n- ระดับกิจกรรม: \"{{activityLevel}}\"\n- วันที่ต้องการออกกำลังกาย: {{workoutDays}}\n- เป้าหมายหลัก: {{goalType}}\n- รายละเอียดเป้าหมายเฉพาะ: \"{{goalDetails}}\"\n- อุปกรณ์ที่มี: \"{{equipment}}\"\n\nจากโปรไฟล์นี้ โปรดสร้างแผนที่ครอบคลุมในรูปแบบ JSON โดย JSON ต้องเป็นไปตามสคีมาที่ให้ไว้\n\nข้อกำหนดเพิ่มเติม:\n- ภาษา: {{languageInstruction}}\n- แผนการออกกำลังกาย: ต้องเป็นตาราง 7 วัน โปรดจัดตารางการออกกำลังกายเฉพาะในวันที่ผู้ใช้เลือกเท่านั้น ({{workoutDays}}). วันอื่นๆ ทั้งหมดในสัปดาห์จะต้องเป็น 'วันพัก' และมีอาร์เรย์ 'exercises' ที่ว่างเปล่า สำหรับวันออกกำลังกาย ให้จัดหาท่าออกกำลังกาย 4-6 ท่าที่เน้นกลุ่มกล้ามเนื้อต่างๆ ตามการแบ่งที่สมเหตุสมผล (เช่น Push/Pull/Legs, Upper/Lower, Full Body)\n- แผนโภชนาการ: ควรระบุเป้าหมายแคลอรี่รายวันและการแบ่งสารอาหารหลัก (โปรตีน, คาร์โบไฮเดรต, ไขมัน เป็นกรัม) ที่เหมาะสมกับเป้าหมายของผู้ใช้ นอกจากนี้ ให้ยกตัวอย่างอาหารสำหรับอาหารเช้า กลางวัน เย็น และของว่างหนึ่งมื้อสำหรับหนึ่งวัน ตัวอย่างอาหารควรดีต่อสุขภาพ สมดุล และสอดคล้องกับเป้าหมายของผู้ใช้\n\nสำคัญ: ห้ามใส่ข้อความเกริ่นนำ ข้อความปิดท้าย หรือเนื้อหาใดๆ นอกเหนือจากอ็อบเจกต์ JSON ที่ถูกต้องและตรงกับสคีมาเพียงอ็อบเจกต์เดียว"
-};
+    "gemini_full_prompt": "คุณคือ AI ผู้เชี่ยวชาญด้านฟิตเนสและโภชนาการระดับโลก งานของคุณคือการสร้างแผนการออกกำลังกายและโภชนาการรายสัปดาห์ส่วนบุคคลสำหรับผู้ใช้ตามโปรไฟล์ของพวกเขา\n\nโปรไฟล์ผู้ใช้:\n- อายุ: {{age}} ปี\n- เพศ: {{gender}}\n- น้ำหนัก: {{weight}} กก.\n- ส่วนสูง: {{height}} ซม.\n- ระดับกิจกรรม: \"{{activityLevel}}\"\n- วันที่ต้องการออกกำลังกาย: {{workoutDays}}\n- เป้าหมายหลัก: {{goalType}}\n- รายละเอียดเป้าหมายเฉพาะ: \"{{goalDetails}}\"\n- อุปกรณ์ที่มี: \"{{equipment}}\"\n\nจากโปรไฟล์นี้ โปรดสร้างแผนที่ครอบคลุมในรูปแบบ JSON โดย JSON ต้องเป็นไปตามสคีมาที่ให้ไว้\n\nข้อกำหนดเพิ่มเติม:\n- ภาษา: {{languageInstruction}}\n- แผนการออกกำลังกาย: ต้องเป็นตาราง 7 วัน โปรดจัดตารางการออกกำลังกายเฉพาะในวันที่ผู้ใช้เลือกเท่านั้น ({{workoutDays}}). วันอื่นๆ ทั้งหมดในสัปดาห์จะต้องเป็น 'วันพัก' และมีอาร์เรย์ 'exercises' ที่ว่างเปล่า สำหรับวันออกกำลังกาย ให้จัดหาท่าออกกำลังกาย 4-6 ท่าที่เน้นกลุ่มกล้ามเนื้อต่างๆ ตามการแบ่งที่สมเหตุสมผล (เช่น Push/Pull/Legs, Upper/Lower, Full Body)\n- แผนโภชนาการ: ควรระบุเป้าหมายแคลอรี่รายวันและการแบ่งสารอาหารหลัก (โปรตีน, คาร์โบไฮเดรต, ไขมัน เป็นกรัม) ที่เหมาะสมกับเป้าหมายของผู้ใช้ นอกจากนี้ ให้ยกตัวอย่างอาหารสำหรับอาหารเช้า กลางวัน เย็น และของว่างหนึ่งมื้อสำหรับหนึ่งวัน ตัวอย่างอาหารควรดีต่อสุขภาพ สมดุล และสอดคล้องกับเป้าหมายของผู้ใช้\n\nสำคัญ: ห้ามใส่ข้อความเกริ่นนำ ข้อความปิดท้าย หรือเนื้อหาใดๆ นอกเหนือจากอ็อบเจกต์ JSON ที่ถูกต้องและตรงกับสคีมาเพียงอ็อบเจกต์เดียว",    
+    "foodTracker": {
+      "title": "Food Tracker",
+      "addMeal": "Add New Meal",
+      "mealName": "Meal Name",
+      "mealNamePlaceholder": "e.g., Breakfast, Lunch, Dinner, Snack",
+      "enterManually": "Enter Manually",
+      "uploadPhoto": "Upload Photo",
+      "selectedFile": "Selected File",
+      "analyzeMeal": "Analyze Meal",
+      "analysisResults": "Analysis Results",
+      "calories": "Calories",
+      "nutrients": "Nutrients",
+      "saveMeal": "Save Meal",
+      "savedSuccessfully": "Meal saved successfully!"
+    }
+  };
 
 const en = {
     "appName": "FitAI Planner",
@@ -169,7 +184,23 @@ const en = {
     "goal_gain_muscle": "Gain Muscle",
     "goal_maintain_health": "Maintain Health",
     "gemini_language_instruction": "All content in the plan, including exercise names, focus areas, sample meals, and all ingredient names in the meals, must be in English.",
-    "gemini_full_prompt": "You are a world-class AI fitness and nutrition expert. Your task is to create a personalized weekly workout and nutrition plan for a user based on their profile.\n\nUser Profile:\n- Age: {{age}} years\n- Gender: {{gender}}\n- Weight: {{weight}} kg\n- Height: {{height}} cm\n- Activity Level: \"{{activityLevel}}\"\n- Desired workout days: {{workoutDays}}\n- Primary Goal: {{goalType}}\n- Specific Goal Details: \"{{goalDetails}}\"\n- Available Equipment: \"{{equipment}}\"\n\nFrom this profile, please generate a comprehensive plan in JSON format. The JSON must strictly adhere to the provided schema.\n\nAdditional Requirements:\n- Language: {{languageInstruction}}\n- Workout Plan: This must be a 7-day schedule. Please schedule workouts only on the user's chosen days ({{workoutDays}}). All other days of the week must be designated as a 'Rest Day' with an empty 'exercises' array. For workout days, provide 4-6 exercises targeting different muscle groups according to a logical split (e.g., Push/Pull/Legs, Upper/Lower, Full Body).\n- Nutrition Plan: Specify a daily calorie target and macronutrient split (protein, carbs, fat in grams) appropriate for the user's goal. Also, provide one full day of sample meals for breakfast, lunch, dinner, and one snack. The sample meals should be healthy, balanced, and align with the user's goals.\n\nImportant: Do not include any introductory text, concluding remarks, or any content whatsoever outside of the single, valid, schema-compliant JSON object."
+    "gemini_full_prompt": "You are a world-class AI fitness and nutrition expert. Your task is to create a personalized weekly workout and nutrition plan for a user based on their profile.\n\nUser Profile:\n- Age: {{age}} years\n- Gender: {{gender}}\n- Weight: {{weight}} kg\n- Height: {{height}} cm\n- Activity Level: \"{{activityLevel}}\"\n- Desired workout days: {{workoutDays}}\n- Primary Goal: {{goalType}}\n- Specific Goal Details: \"{{goalDetails}}\"\n- Available Equipment: \"{{equipment}}\"\n\nFrom this profile, please generate a comprehensive plan in JSON format. The JSON must strictly adhere to the provided schema.\n\nAdditional Requirements:\n- Language: {{languageInstruction}}\n- Workout Plan: This must be a 7-day schedule. Please schedule workouts only on the user's chosen days ({{workoutDays}}). All other days of the week must be designated as a 'Rest Day' with an empty 'exercises' array. For workout days, provide 4-6 exercises targeting different muscle groups according to a logical split (e.g., Push/Pull/Legs, Upper/Lower, Full Body).\n- Nutrition Plan: Specify a daily calorie target and macronutrient split (protein, carbs, fat in grams) appropriate for the user's goal. Also, provide one full day of sample meals for breakfast, lunch, dinner, and one snack. The sample meals should be healthy, balanced, and align with the user's goals.\n\nImportant: Do not include any introductory text, concluding remarks, or any content whatsoever outside of the single, valid, schema-compliant JSON object.",
+    "dashboard": "Dashboard",
+    "foodTracker": {
+        "title": "Food Tracker",
+        "addMeal": "Add New Meal",
+        "mealName": "Meal Name",
+        "mealNamePlaceholder": "e.g., Breakfast, Lunch, Dinner, Snack",
+        "enterManually": "Enter Manually",
+        "uploadPhoto": "Upload Photo",
+        "selectedFile": "Selected File",
+        "analyzeMeal": "Analyze Meal",
+        "analysisResults": "Analysis Results",
+        "calories": "Calories",
+        "nutrients": "Nutrients",
+        "saveMeal": "Save Meal",
+        "savedSuccessfully": "Meal saved successfully!"
+    }
 };
 
 type Translations = typeof th;
@@ -188,8 +219,23 @@ export const setLanguage = (lang: 'th' | 'en') => {
 
 export const getLanguage = () => currentLanguage;
 
-export const t = (key: keyof Translations, replacements?: { [key: string]: string | number }): string => {
-  let translation = translations[currentLanguage][key] || key;
+export const t = (key: string, replacements?: { [key: string]: string | number }): string => {
+  let translation: string | { [key: string]: any } = translations[currentLanguage];
+  const keyParts = key.split('.');
+
+  for (let i = 0; i < keyParts.length; i++) {
+    if (typeof translation === 'object' && translation !== null && keyParts[i] in translation) {
+      translation = translation[keyParts[i]];
+    } else {
+      translation = key; // Fallback to key if not found
+      break;
+    }
+  }
+
+  if (typeof translation !== 'string') {
+    return key; // Return key if the final resolved value is not a string
+  }
+
   if (replacements) {
     Object.keys(replacements).forEach(rKey => {
       translation = translation.replace(new RegExp(`{{${rKey}}}`, 'g'), String(replacements[rKey]));
