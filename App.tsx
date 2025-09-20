@@ -6,6 +6,7 @@ import LoadingSpinner from './components/LoadingSpinner';
 import Header from './components/Header';
 import Login from './components/Login';
 import Feedback from './components/Feedback';
+import FoodTracker from './components/FoodTracker';
 import { generateFitnessPlan, generateNewSampleMeals } from './services/geminiService';
 import { getUserData, saveUserData } from './services/firestoreService';
 import { useAuth } from './hooks/useAuth';
@@ -20,6 +21,7 @@ const App: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isRandomizingMeals, setIsRandomizingMeals] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'foodTracker'>('dashboard');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -157,14 +159,19 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-slate-50 text-slate-800">
       {userData?.profile && userData?.plan ? (
         <>
-          <Header onLogout={handleLogout} onResetPlan={handleResetPlan} />
+          <Header onLogout={handleLogout} onResetPlan={handleResetPlan} onNavigate={setCurrentView} />
           <main>
-            <Dashboard 
-              profile={userData.profile} 
-              plan={userData.plan} 
-              onRandomizeMeals={handleRandomizeMeals}
-              isRandomizing={isRandomizingMeals}
-            />
+            {currentView === 'dashboard' && (
+              <Dashboard 
+                profile={userData.profile} 
+                plan={userData.plan} 
+                onRandomizeMeals={handleRandomizeMeals}
+                isRandomizing={isRandomizingMeals}
+              />
+            )}
+            {currentView === 'foodTracker' && (
+              <FoodTracker />
+            )}
           </main>
         </>
       ) : (

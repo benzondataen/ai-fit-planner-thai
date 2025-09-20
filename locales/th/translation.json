@@ -1,0 +1,28 @@
+{
+    "appName": "AI Fit Planner",
+    "loadingProfile": "กำลังโหลดโปรไฟล์ผู้ใช้...",
+    "generatingPlan": "กำลังสร้างแผนส่วนตัวของคุณ...",
+    "failedToLoadProfile": "ไม่สามารถโหลดโปรไฟล์ผู้ใช้ได้ กรุณาลองอีกครั้ง",
+    "loginRequired": "ต้องเข้าสู่ระบบเพื่อดำเนินการนี้",
+    "unknownError": "เกิดข้อผิดพลาดที่ไม่รู้จัก กรุณาลองอีกครั้ง",
+    "failedToGenerate": "สร้างแผนไม่สำเร็จ",
+    "tryAgain": "ลองอีกครั้ง",
+    "logout": "ออกจากระบบ",
+    "resetPlan": "รีเซ็ตแผน",
+    "dashboard": "หน้าหลัก",
+    "foodTracker": {
+        "title": "ติดตามอาหาร",
+        "addMeal": "เพิ่มมื้ออาหารใหม่",
+        "mealName": "ชื่อมื้ออาหาร",
+        "mealNamePlaceholder": "เช่น อาหารเช้า, กลางวัน, เย็น, ของว่าง",
+        "enterManually": "ป้อนข้อมูลเอง",
+        "uploadPhoto": "อัปโหลดรูปภาพ",
+        "selectedFile": "ไฟล์ที่เลือก",
+        "analyzeMeal": "วิเคราะห์มื้ออาหาร",
+        "analysisResults": "ผลการวิเคราะห์",
+        "calories": "แคลอรี่",
+        "nutrients": "สารอาหาร",
+        "saveMeal": "บันทึกมื้ออาหาร",
+        "savedSuccessfully": "บันทึกมื้ออาหารเรียบร้อยแล้ว!"
+    }
+}

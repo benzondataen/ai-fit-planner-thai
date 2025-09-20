@@ -1,0 +1,28 @@
+{
+    "appName": "AI Fit Planner",
+    "loadingProfile": "Loading user profile...",
+    "generatingPlan": "Generating your personalized plan...",
+    "failedToLoadProfile": "Failed to load user profile. Please try again.",
+    "loginRequired": "Login required to perform this action.",
+    "unknownError": "An unknown error occurred. Please try again.",
+    "failedToGenerate": "Failed to generate plan",
+    "tryAgain": "Try Again",
+    "logout": "Logout",
+    "resetPlan": "Reset Plan",
+    "dashboard": "Dashboard",
+    "foodTracker": {
+        "title": "Food Tracker",
+        "addMeal": "Add New Meal",
+        "mealName": "Meal Name",
+        "mealNamePlaceholder": "e.g., Breakfast, Lunch, Dinner, Snack",
+        "enterManually": "Enter Manually",
+        "uploadPhoto": "Upload Photo",
+        "selectedFile": "Selected File",
+        "analyzeMeal": "Analyze Meal",
+        "analysisResults": "Analysis Results",
+        "calories": "Calories",
+        "nutrients": "Nutrients",
+        "saveMeal": "Save Meal",
+        "savedSuccessfully": "Meal saved successfully!"
+    }
+}
