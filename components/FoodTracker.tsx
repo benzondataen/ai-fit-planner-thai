@@ -1,56 +1,77 @@
 import React, { useState } from 'react';
 import { useTranslation } from '../translations';
+import { analyzeFoodItem } from '../services/geminiService';
+import { RefreshIcon } from './common/Icons';
 
 const FoodTracker: React.FC = () => {
     const { t } = useTranslation();
     const [mealName, setMealName] = useState('');
     const [mealInput, setMealInput] = useState<string | File | null>(null);
-    const [analysisResult, setAnalysisResult] = useState<{ calories: number; nutrients: any } | null>(null);
+    const [analysisResult, setAnalysisResult] = useState<{ calories: number; nutrients: any; description?: string } | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editedCalories, setEditedCalories] = useState<number | null>(null);
     const [editedNutrients, setEditedNutrients] = useState<any | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     const handleManualInput = () => {
-        // Placeholder for manual input logic
-        console.log('Manual input:', mealName);
-        // For now, let's mock an analysis result
-        setAnalysisResult({ calories: 500, nutrients: { protein: 20, carbs: 50, fat: 25 } });
+        setMealInput(mealName);
+        setAnalysisResult(null);
         setIsEditing(false);
-        setImagePreviewUrl(null); // Clear image preview if switching to manual input
+        if (imagePreviewUrl) {
+            URL.revokeObjectURL(imagePreviewUrl);
+        }
+        setImagePreviewUrl(null);
     };
 
     const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
             setMealInput(file);
-            console.log('Photo uploaded:', file.name);
+            setMealName(''); // Clear meal name if photo is uploaded
+            setAnalysisResult(null);
+            setIsEditing(false);
 
-            // Create a URL for the image preview
             if (imagePreviewUrl) {
-                URL.revokeObjectURL(imagePreviewUrl); // Clean up previous URL
+                URL.revokeObjectURL(imagePreviewUrl);
             }
             const newImageUrl = URL.createObjectURL(file);
             setImagePreviewUrl(newImageUrl);
-
-            // For now, let's mock an analysis result
-            setAnalysisResult({ calories: 600, nutrients: { protein: 30, carbs: 60, fat: 30 } });
-            setIsEditing(false);
         }
     };
 
-    const handleAnalyze = () => {
-        // This will trigger the AI analysis in a later phase
-        console.log('Analyzing meal...');
-        // Mock analysis for now
-        setAnalysisResult({ calories: 450, nutrients: { protein: 15, carbs: 40, fat: 20 } });
-        setIsEditing(false);
+    const handleAnalyze = async () => {
+        if (!mealName && !mealInput) {
+            alert(t('foodTracker.noInputError'));
+            return;
+        }
+
+        setIsAnalyzing(true);
+        setAnalysisResult(null);
+        setEditedCalories(null);
+        setEditedNutrients(null);
+
+        try {
+            const result = await analyzeFoodItem(mealInput || mealName);
+            setAnalysisResult({
+                calories: result.calories,
+                nutrients: { protein: result.protein, carbs: result.carbs, fat: result.fat },
+                description: result.description
+            });
+            setEditedCalories(result.calories);
+            setEditedNutrients({ protein: result.protein, carbs: result.carbs, fat: result.fat });
+        } catch (error) {
+            console.error("Error during food analysis:", error);
+            alert(t('foodTracker.analysisError'));
+        } finally {
+            setIsAnalyzing(false);
+        }
     };
 
     const handleSaveMeal = () => {
         // This will save to Firestore in a later phase
         console.log('Saving meal:', { mealName, calories: editedCalories || analysisResult?.calories, nutrients: editedNutrients || analysisResult?.nutrients });
-        alert('Meal saved (placeholder)!');
+        alert(t('foodTracker.savedSuccessfully'));
         // Reset state after saving
         setMealName('');
         setMealInput(null);
@@ -58,7 +79,7 @@ const FoodTracker: React.FC = () => {
         setEditedCalories(null);
         setEditedNutrients(null);
         if (imagePreviewUrl) {
-            URL.revokeObjectURL(imagePreviewUrl); // Clean up URL on save
+            URL.revokeObjectURL(imagePreviewUrl);
         }
         setImagePreviewUrl(null);
     };
@@ -106,16 +127,22 @@ const FoodTracker: React.FC = () => {
 
                 <button
                     onClick={handleAnalyze}
-                    className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition duration-300"
-                    disabled={!mealName && !mealInput}
+                    className={`w-full px-4 py-2 text-white font-semibold rounded-lg transition duration-300 flex items-center justify-center space-x-2 ${isAnalyzing ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
+                    disabled={isAnalyzing || (!mealName && !mealInput)}
                 >
-                    {t('foodTracker.analyzeMeal')}
+                    {isAnalyzing && <RefreshIcon className={`w-5 h-5 animate-spin`} />}
+                    <span>{isAnalyzing ? t('foodTracker.analyzing') : t('foodTracker.analyzeMeal')}</span>
                 </button>
             </div>
 
             {analysisResult && (
                 <div className="bg-white p-6 rounded-lg shadow-md mb-6">
                     <h3 className="text-xl font-semibold text-slate-700 mb-4">{t('foodTracker.analysisResults')}</h3>
+                    {analysisResult.description && (
+                        <div className="mb-4">
+                            <p className="text-sm text-slate-700"><strong>{t('foodTracker.description')}:</strong> {analysisResult.description}</p>
+                        </div>
+                    )}
                     <div className="mb-4">
                         <label htmlFor="calories" className="block text-sm font-medium text-slate-600 mb-2">{t('foodTracker.calories')}</label>
                         <input

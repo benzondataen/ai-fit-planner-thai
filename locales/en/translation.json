@@ -23,6 +23,11 @@
         "calories": "Calories",
         "nutrients": "Nutrients",
         "saveMeal": "Save Meal",
-        "savedSuccessfully": "Meal saved successfully!"
+        "savedSuccessfully": "Meal saved successfully!",
+        "noInputError": "Please enter a meal name or upload a photo to analyze.",
+        "analysisError": "Failed to analyze food item. Please try again.",
+        "analyzing": "Analyzing...",
+        "analyzingMessage": "AI is analyzing your food item...",
+        "description": "Description"
     }
 }

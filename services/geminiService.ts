@@ -141,6 +141,78 @@ Important: Respond only with the JSON object for the meal plan, matching the pro
 };
 
 
+const foodAnalysisSchema = {
+    type: Type.OBJECT,
+    properties: {
+        calories: { type: Type.NUMBER },
+        protein: { type: Type.NUMBER },
+        carbs: { type: Type.NUMBER },
+        fat: { type: Type.NUMBER },
+        description: { type: Type.STRING }
+    },
+    required: ["calories", "protein", "carbs", "fat"]
+};
+
+export const analyzeFoodItem = async (input: string | File): Promise<{ calories: number; protein: number; carbs: number; fat: number; description?: string }> => {
+    try {
+        let contents: any[] = [];
+        let modelName = "gemini-2.5-flash"; // Default model
+
+        if (typeof input === 'string') {
+            // Text input
+            contents.push({ text: `Analyze the following food item and provide its estimated calories, protein, carbohydrates, and fat in grams. Respond ONLY with a JSON object matching the provided schema. Food item: ${input}` });
+        } else {
+            // Image input
+            const reader = new FileReader();
+            const base64 = await new Promise<string>((resolve, reject) => {
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(input);
+            });
+
+            // console.log("Raw base64 from FileReader:", base64);
+            const mimeType = input.type;
+            const data = base64.split(',')[1];
+
+            // console.log("Extracted MIME type:", mimeType);
+            // console.log("Extracted base64 data part:", data);
+
+            if (!data || data.length === 0) {
+                throw new Error("Image data could not be extracted or is empty.");
+            }
+            if (!mimeType || mimeType.length === 0) {
+                throw new Error("Image MIME type could not be determined.");
+            }
+
+            contents.push(
+                { text: "Analyze the food in this image and provide its estimated calories, protein, carbohydrates, and fat in grams. Also, provide a brief description of the food. Respond ONLY with a JSON object matching the provided schema." },
+                { inlineData: { data: data, mimeType: mimeType } }
+            );
+            modelName = "gemini-2.5-flash";
+
+            // console.log("Contents being sent to Gemini:", JSON.stringify(contents, null, 2));
+            // console.log("Model name:", modelName);
+
+        }
+
+        const response = await ai.models.generateContent({
+            model: modelName,
+            contents: contents,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: foodAnalysisSchema,
+            },
+        });
+
+        const jsonText = response.text.trim();
+        const analysis = JSON.parse(jsonText);
+        return analysis as { calories: number; protein: number; carbs: number; fat: number; description?: string };
+    } catch (error) {
+        console.error("Error analyzing food item:", error);
+        throw new Error(t('foodTracker.analysisError') || 'Failed to analyze food item.');
+    }
+};
+
 export const generateNewSampleMeals = async (profile: UserProfile, nutritionPlan: NutritionPlan): Promise<SampleMeals> => {
   try {
     const prompt = generateNewMealsPrompt(profile, nutritionPlan);

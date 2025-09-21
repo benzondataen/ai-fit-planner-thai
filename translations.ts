@@ -97,7 +97,10 @@ const th = {
       "calories": "Calories",
       "nutrients": "Nutrients",
       "saveMeal": "Save Meal",
-      "savedSuccessfully": "Meal saved successfully!"
+      "savedSuccessfully": "Meal saved successfully!",
+      "analyzing" : "analyzing",
+      "analyzingMessage": "analyzing Message",
+      "description": "description"
     }
   };
 
@@ -199,7 +202,10 @@ const en = {
         "calories": "Calories",
         "nutrients": "Nutrients",
         "saveMeal": "Save Meal",
-        "savedSuccessfully": "Meal saved successfully!"
+        "savedSuccessfully": "Meal saved successfully!",
+        "analyzing" : "analyzing",
+        "analyzingMessage": "analyzing Message",
+        "description": "description"
     }
 };
 
