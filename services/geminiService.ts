@@ -144,23 +144,24 @@ Important: Respond only with the JSON object for the meal plan, matching the pro
 const foodAnalysisSchema = {
     type: Type.OBJECT,
     properties: {
+        mealTitle: { type: Type.STRING },
         calories: { type: Type.NUMBER },
         protein: { type: Type.NUMBER },
         carbs: { type: Type.NUMBER },
         fat: { type: Type.NUMBER },
         description: { type: Type.STRING }
     },
-    required: ["calories", "protein", "carbs", "fat"]
+    required: ["mealTitle", "calories", "protein", "carbs", "fat"]
 };
 
-export const analyzeFoodItem = async (input: string | File): Promise<{ calories: number; protein: number; carbs: number; fat: number; description?: string }> => {
+export const analyzeFoodItem = async (input: string | File): Promise<{ mealTitle: string; calories: number; protein: number; carbs: number; fat: number; description?: string }> => {
     try {
         let contents: any[] = [];
         let modelName = "gemini-2.5-flash"; // Default model
 
         if (typeof input === 'string') {
             // Text input
-            contents.push({ text: `Analyze the following food item and provide its estimated calories, protein, carbohydrates, and fat in grams. Respond ONLY with a JSON object matching the provided schema. Food item: ${input}` });
+            contents.push({ text: `Analyze the following food item and provide a concise meal title, its estimated calories, protein, carbohydrates, and fat in grams. Respond ONLY with a JSON object matching the provided schema. Food item: ${input}` });
         } else {
             // Image input
             const reader = new FileReader();
@@ -185,7 +186,7 @@ export const analyzeFoodItem = async (input: string | File): Promise<{ calories:
             }
 
             contents.push(
-                { text: "Analyze the food in this image and provide its estimated calories, protein, carbohydrates, and fat in grams. Also, provide a brief description of the food. Respond ONLY with a JSON object matching the provided schema." },
+                { text: "Analyze the food in this image and provide a concise meal title, its estimated calories, protein, carbohydrates, and fat in grams. Also, provide a brief description of the food. Respond ONLY with a JSON object matching the provided schema." },
                 { inlineData: { data: data, mimeType: mimeType } }
             );
             modelName = "gemini-2.5-flash";
@@ -206,7 +207,7 @@ export const analyzeFoodItem = async (input: string | File): Promise<{ calories:
 
         const jsonText = response.text.trim();
         const analysis = JSON.parse(jsonText);
-        return analysis as { calories: number; protein: number; carbs: number; fat: number; description?: string };
+        return analysis as { mealTitle: string; calories: number; protein: number; carbs: number; fat: number; description?: string };
     } catch (error) {
         console.error("Error analyzing food item:", error);
         throw new Error(t('foodTracker.analysisError') || 'Failed to analyze food item.');

@@ -1,18 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../translations';
 import { analyzeFoodItem } from '../services/geminiService';
+import { saveMealEntry, getDailyMealEntries } from '../services/firestoreService';
+import { useAuth } from '../hooks/useAuth';
 import { RefreshIcon } from './common/Icons';
+import { MealEntry, NutrientData } from '../types';
 
 const FoodTracker: React.FC = () => {
     const { t } = useTranslation();
+    const { user } = useAuth();
     const [mealName, setMealName] = useState('');
     const [mealInput, setMealInput] = useState<string | File | null>(null);
-    const [analysisResult, setAnalysisResult] = useState<{ calories: number; nutrients: any; description?: string } | null>(null);
+    const [analysisResult, setAnalysisResult] = useState<{ mealTitle: string; calories: number; nutrients: NutrientData; description?: string } | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editedCalories, setEditedCalories] = useState<number | null>(null);
-    const [editedNutrients, setEditedNutrients] = useState<any | null>(null);
+    const [editedNutrients, setEditedNutrients] = useState<NutrientData | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [dailyMeals, setDailyMeals] = useState<MealEntry[]>([]);
+    const [currentDate, setCurrentDate] = useState(new Date());
 
     const handleManualInput = () => {
         setMealInput(mealName);
@@ -54,12 +60,18 @@ const FoodTracker: React.FC = () => {
         try {
             const result = await analyzeFoodItem(mealInput || mealName);
             setAnalysisResult({
+                mealTitle: result.mealTitle,
                 calories: result.calories,
                 nutrients: { protein: result.protein, carbs: result.carbs, fat: result.fat },
                 description: result.description
             });
             setEditedCalories(result.calories);
             setEditedNutrients({ protein: result.protein, carbs: result.carbs, fat: result.fat });
+
+            // If mealName is empty and a mealTitle is provided, use it as the meal name
+            if (!mealName && result.mealTitle) {
+                setMealName(result.mealTitle);
+            }
         } catch (error) {
             console.error("Error during food analysis:", error);
             alert(t('foodTracker.analysisError'));
@@ -68,20 +80,63 @@ const FoodTracker: React.FC = () => {
         }
     };
 
-    const handleSaveMeal = () => {
-        // This will save to Firestore in a later phase
-        console.log('Saving meal:', { mealName, calories: editedCalories || analysisResult?.calories, nutrients: editedNutrients || analysisResult?.nutrients });
-        alert(t('foodTracker.savedSuccessfully'));
-        // Reset state after saving
-        setMealName('');
-        setMealInput(null);
-        setAnalysisResult(null);
-        setEditedCalories(null);
-        setEditedNutrients(null);
-        if (imagePreviewUrl) {
-            URL.revokeObjectURL(imagePreviewUrl);
+    const fetchDailyMeals = async () => {
+        if (user) {
+            const formattedDate = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
+            try {
+                const meals = await getDailyMealEntries(user.uid, formattedDate);
+                setDailyMeals(meals);
+            } catch (error) {
+                console.error("Error fetching daily meals:", error);
+                alert(t('foodTracker.fetchMealsError'));
+            }
         }
-        setImagePreviewUrl(null);
+    };
+
+    useEffect(() => {
+        fetchDailyMeals();
+    }, [user, currentDate]); // Re-fetch when user or date changes
+
+    const handleSaveMeal = async () => {
+        if (!user) {
+            alert(t('loginRequired'));
+            return;
+        }
+        if (!analysisResult || !editedCalories || !editedNutrients) {
+            alert(t('foodTracker.noAnalysisResult'));
+            return;
+        }
+
+        const mealToSave: MealEntry = {
+            userId: user.uid,
+            mealName: mealName || t('foodTracker.unnamedMeal'),
+            calories: editedCalories,
+            protein: editedNutrients?.protein || 0,
+            carbs: editedNutrients?.carbs || 0,
+            fat: editedNutrients?.fat || 0,
+            description: analysisResult.description,
+            imageUrl: imagePreviewUrl || null,
+            timestamp: new Date(),
+        };
+
+        try {
+            await saveMealEntry(user.uid, mealToSave);
+            alert(t('foodTracker.savedSuccessfully'));
+            // Reset state after saving
+            setMealName('');
+            setMealInput(null);
+            setAnalysisResult(null);
+            setEditedCalories(null);
+            setEditedNutrients(null);
+            if (imagePreviewUrl) {
+                URL.revokeObjectURL(imagePreviewUrl);
+            }
+            setImagePreviewUrl(null);
+            fetchDailyMeals(); // Refresh the list of daily meals
+        } catch (error) {
+            console.error("Error saving meal:", error);
+            alert(t('foodTracker.saveMealError'));
+        }
     };
 
     return (
@@ -171,6 +226,40 @@ const FoodTracker: React.FC = () => {
                     </button>
                 </div>
             )}
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-semibold text-slate-700 mb-4">{t('foodTracker.dailySummary')} ({currentDate.toLocaleDateString()})</h3>
+                
+                {dailyMeals.length === 0 ? (
+                    <p className="text-slate-500">{t('foodTracker.noMealsRecorded')}</p>
+                ) : (
+                    <div className="space-y-4">
+                        {(Object.entries(dailyMeals.reduce((acc, meal) => {
+                            const mealType = meal.mealName.toLowerCase().includes('breakfast') ? 'breakfast' :
+                                             meal.mealName.toLowerCase().includes('lunch') ? 'lunch' :
+                                             meal.mealName.toLowerCase().includes('dinner') ? 'dinner' :
+                                             meal.mealName.toLowerCase().includes('snack') ? 'snack' :
+                                             'other';
+                            if (!acc[mealType]) acc[mealType] = [];
+                            acc[mealType].push(meal);
+                            return acc;
+                        }, {} as Record<string, MealEntry[]>)) as [string, MealEntry[]][]).map(([mealType, meals]) => (
+                            <div key={mealType} className="border-b pb-2 last:border-b-0">
+                                <h4 className="font-semibold text-slate-600 capitalize mb-2">{t(`foodTracker.mealType.${mealType}`)}</h4>
+                                {meals.map(meal => (
+                                    <div key={meal.id} className="flex justify-between items-center text-sm text-slate-700 mb-1">
+                                        <span>{meal.mealName}</span>
+                                        <span>{meal.calories} {t('kcal')}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                        <div className="font-bold text-lg text-slate-800 pt-4 border-t mt-4">
+                            {t('foodTracker.totalCalories')}: {dailyMeals.reduce((sum, meal) => sum + meal.calories, 0)} {t('kcal')}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

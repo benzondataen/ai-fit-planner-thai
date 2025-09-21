@@ -100,7 +100,18 @@ const th = {
       "savedSuccessfully": "Meal saved successfully!",
       "analyzing" : "analyzing",
       "analyzingMessage": "analyzing Message",
-      "description": "description"
+      "description": "description",
+      "dailySummary" : "Daily Summary",
+      "noMealsRecorded" : "No Meals Recorded",
+      "unnamedMeal" : "Unnamed Meal",
+      "totalCalories" : "Total Calories",
+      "mealType" : {
+        "other" : "other",
+        "breakfast" : "breakfast",
+        "lunch" : "lunch",
+        "dinner" : "dinner",
+        "snack" : "snack",
+      }
     }
   };
 
@@ -205,7 +216,18 @@ const en = {
         "savedSuccessfully": "Meal saved successfully!",
         "analyzing" : "analyzing",
         "analyzingMessage": "analyzing Message",
-        "description": "description"
+        "description": "description",
+        "dailySummary" : "Daily Summary",
+        "noMealsRecorded" : "No Meals Recorded",
+        "unnamedMeal" : "Unnamed Meal",
+        "totalCalories" : "Total Calories",
+        "mealType" : {
+          "other" : "other",
+          "breakfast" : "breakfast",
+          "lunch" : "lunch",
+          "dinner" : "dinner",
+          "snack" : "snack",
+        }
     }
 };
 

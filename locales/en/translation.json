@@ -28,6 +28,20 @@
         "analysisError": "Failed to analyze food item. Please try again.",
         "analyzing": "Analyzing...",
         "analyzingMessage": "AI is analyzing your food item...",
-        "description": "Description"
+        "description": "Description",
+        "noAnalysisResult": "No analysis result to save. Please analyze a meal first.",
+        "unnamedMeal": "Unnamed Meal",
+        "saveMealError": "Failed to save meal. Please try again.",
+        "fetchMealsError": "Failed to fetch daily meals. Please try again.",
+        "dailySummary": "Daily Meal Summary",
+        "totalCalories": "Total Calories",
+        "noMealsRecorded": "No meals recorded for this day.",
+        "mealType": {
+            "breakfast": "Breakfast",
+            "lunch": "Lunch",
+            "dinner": "Dinner",
+            "snack": "Snack",
+            "other": "Other"
+        }
     }
 }
