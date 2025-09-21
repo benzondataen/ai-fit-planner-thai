@@ -42,6 +42,16 @@
             "dinner": "อาหารเย็น",
             "snack": "ของว่าง",
             "other": "อื่นๆ"
-        }
+        },
+        "dailyTargets": "เป้าหมายรายวัน",
+        "targetCalories": "เป้าหมายแคลอรี่",
+        "targetProtein": "เป้าหมายโปรตีน",
+        "targetCarbs": "เป้าหมายคาร์โบไฮเดรต",
+        "targetFat": "เป้าหมายไขมัน",
+        "progress": "ความคืบหน้า",
+        "caloriesProgress": "ความคืบหน้าแคลอรี่",
+        "proteinProgress": "ความคืบหน้าโปรตีน",
+        "carbsProgress": "ความคืบหน้าคาร์โบไฮเดรต",
+        "fatProgress": "ความคืบหน้าไขมัน"
     }
 }

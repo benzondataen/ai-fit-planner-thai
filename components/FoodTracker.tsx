@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../translations';
 import { analyzeFoodItem } from '../services/geminiService';
-import { saveMealEntry, getDailyMealEntries } from '../services/firestoreService';
+import { saveMealEntry, getDailyMealEntries, getUserData } from '../services/firestoreService';
 import { useAuth } from '../hooks/useAuth';
 import { RefreshIcon } from './common/Icons';
-import { MealEntry, NutrientData } from '../types';
+import { MealEntry, NutrientData, NutritionPlan } from '../types';
 
 const FoodTracker: React.FC = () => {
     const { t } = useTranslation();
@@ -19,6 +19,36 @@ const FoodTracker: React.FC = () => {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [dailyMeals, setDailyMeals] = useState<MealEntry[]>([]);
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [dailyNutritionTarget, setDailyNutritionTarget] = useState<NutritionPlan | null>(null);
+
+    // Calculate daily totals for calories, protein, carbs, and fat
+    const totalCalories = dailyMeals.reduce((sum, meal) => sum + meal.calories, 0);
+    const totalProtein = dailyMeals.reduce((sum, meal) => sum + meal.protein, 0);
+    const totalCarbs = dailyMeals.reduce((sum, meal) => sum + meal.carbs, 0);
+    const totalFat = dailyMeals.reduce((sum, meal) => sum + meal.fat, 0);
+
+    // ปรับรูปแบบวันที่ที่นี่
+    const formattedDate = new Intl.DateTimeFormat('th-TH', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    }).format(currentDate);
+
+    useEffect(() => {
+        const fetchNutritionPlan = async () => {
+            if (user) {
+                try {
+                    const userData = await getUserData(user.uid);
+                    if (userData && userData.plan && userData.plan.nutritionPlan) {
+                        setDailyNutritionTarget(userData.plan.nutritionPlan);
+                    }
+                } catch (error) {
+                    console.error("Error fetching nutrition plan:", error);
+                }
+            }
+        };
+        fetchNutritionPlan();
+    }, [user]);
 
     const handleManualInput = () => {
         setMealInput(mealName);
@@ -34,7 +64,7 @@ const FoodTracker: React.FC = () => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
             setMealInput(file);
-            setMealName(''); // Clear meal name if photo is uploaded
+            setMealName('');
             setAnalysisResult(null);
             setIsEditing(false);
 
@@ -68,7 +98,6 @@ const FoodTracker: React.FC = () => {
             setEditedCalories(result.calories);
             setEditedNutrients({ protein: result.protein, carbs: result.carbs, fat: result.fat });
 
-            // If mealName is empty and a mealTitle is provided, use it as the meal name
             if (!mealName && result.mealTitle) {
                 setMealName(result.mealTitle);
             }
@@ -82,9 +111,9 @@ const FoodTracker: React.FC = () => {
 
     const fetchDailyMeals = async () => {
         if (user) {
-            const formattedDate = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
+            const formattedDateForFirestore = currentDate.toISOString().split('T')[0];
             try {
-                const meals = await getDailyMealEntries(user.uid, formattedDate);
+                const meals = await getDailyMealEntries(user.uid, formattedDateForFirestore);
                 setDailyMeals(meals);
             } catch (error) {
                 console.error("Error fetching daily meals:", error);
@@ -95,7 +124,7 @@ const FoodTracker: React.FC = () => {
 
     useEffect(() => {
         fetchDailyMeals();
-    }, [user, currentDate]); // Re-fetch when user or date changes
+    }, [user, currentDate]);
 
     const handleSaveMeal = async () => {
         if (!user) {
@@ -122,7 +151,6 @@ const FoodTracker: React.FC = () => {
         try {
             await saveMealEntry(user.uid, mealToSave);
             alert(t('foodTracker.savedSuccessfully'));
-            // Reset state after saving
             setMealName('');
             setMealInput(null);
             setAnalysisResult(null);
@@ -132,7 +160,7 @@ const FoodTracker: React.FC = () => {
                 URL.revokeObjectURL(imagePreviewUrl);
             }
             setImagePreviewUrl(null);
-            fetchDailyMeals(); // Refresh the list of daily meals
+            fetchDailyMeals();
         } catch (error) {
             console.error("Error saving meal:", error);
             alert(t('foodTracker.saveMealError'));
@@ -228,35 +256,37 @@ const FoodTracker: React.FC = () => {
             )}
 
             <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-semibold text-slate-700 mb-4">{t('foodTracker.dailySummary')} ({currentDate.toLocaleDateString()})</h3>
-                
+                <h3 className="text-xl font-semibold text-slate-700 mb-4">{t('foodTracker.dailySummary')} ({formattedDate})</h3>
+
                 {dailyMeals.length === 0 ? (
                     <p className="text-slate-500">{t('foodTracker.noMealsRecorded')}</p>
                 ) : (
                     <div className="space-y-4">
-                        {(Object.entries(dailyMeals.reduce((acc, meal) => {
-                            const mealType = meal.mealName.toLowerCase().includes('breakfast') ? 'breakfast' :
-                                             meal.mealName.toLowerCase().includes('lunch') ? 'lunch' :
-                                             meal.mealName.toLowerCase().includes('dinner') ? 'dinner' :
-                                             meal.mealName.toLowerCase().includes('snack') ? 'snack' :
-                                             'other';
-                            if (!acc[mealType]) acc[mealType] = [];
-                            acc[mealType].push(meal);
-                            return acc;
-                        }, {} as Record<string, MealEntry[]>)) as [string, MealEntry[]][]).map(([mealType, meals]) => (
-                            <div key={mealType} className="border-b pb-2 last:border-b-0">
-                                <h4 className="font-semibold text-slate-600 capitalize mb-2">{t(`foodTracker.mealType.${mealType}`)}</h4>
-                                {meals.map(meal => (
-                                    <div key={meal.id} className="flex justify-between items-center text-sm text-slate-700 mb-1">
-                                        <span>{meal.mealName}</span>
-                                        <span>{meal.calories} {t('kcal')}</span>
-                                    </div>
-                                ))}
+                        {dailyMeals.map(meal => (
+                            <div key={meal.id} className="flex justify-between items-center text-sm text-slate-700 mb-1">
+                                <span>{meal.mealName}</span>
+                                <span>{meal.calories} {t('kcal')}</span>
                             </div>
                         ))}
                         <div className="font-bold text-lg text-slate-800 pt-4 border-t mt-4">
-                            {t('foodTracker.totalCalories')}: {dailyMeals.reduce((sum, meal) => sum + meal.calories, 0)} {t('kcal')}
+                            {t('foodTracker.totalCalories')}: {totalCalories} {t('kcal')}
                         </div>
+
+                        {dailyNutritionTarget && (
+                            <div className="mt-4 pt-4 border-t border-slate-200">
+                                <h4 className="text-lg font-semibold text-slate-700 mb-2">{t('foodTracker.dailyTargets')}</h4>
+                                <p className="text-sm text-slate-600">{t('foodTracker.targetCalories')}: {dailyNutritionTarget.dailyCalories} {t('kcal')}</p>
+                                <p className="text-sm text-slate-600">{t('foodTracker.targetProtein')}: {dailyNutritionTarget.proteinGrams} g</p>
+                                <p className="text-sm text-slate-600">{t('foodTracker.targetCarbs')}: {dailyNutritionTarget.carbsGrams} g</p>
+                                <p className="text-sm text-slate-600">{t('foodTracker.targetFat')}: {dailyNutritionTarget.fatGrams} g</p>
+
+                                <h4 className="text-lg font-semibold text-slate-700 mt-4 mb-2">{t('foodTracker.progress')}</h4>
+                                <p className="text-sm text-slate-600">{t('foodTracker.caloriesProgress')}: {totalCalories} / {dailyNutritionTarget.dailyCalories} {t('kcal')} ({((totalCalories / dailyNutritionTarget.dailyCalories) * 100).toFixed(1)}%)</p>
+                                <p className="text-sm text-slate-600">{t('foodTracker.proteinProgress')}: {totalProtein} / {dailyNutritionTarget.proteinGrams} g ({((totalProtein / dailyNutritionTarget.proteinGrams) * 100).toFixed(1)}%)</p>
+                                <p className="text-sm text-slate-600">{t('foodTracker.carbsProgress')}: {totalCarbs} / {dailyNutritionTarget.carbsGrams} g ({((totalCarbs / dailyNutritionTarget.carbsGrams) * 100).toFixed(1)}%)</p>
+                                <p className="text-sm text-slate-600">{t('foodTracker.fatProgress')}: {totalFat} / {dailyNutritionTarget.fatGrams} g ({((totalFat / dailyNutritionTarget.fatGrams) * 100).toFixed(1)}%)</p>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
